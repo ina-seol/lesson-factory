@@ -1,0 +1,2 @@
+import {sheetShape} from './shared';
+export const assessmentPrompt=`Generate Exit Ticket=3 questions (final question self-assessment), 5문항 Quiz=5, 10문항 Quiz=10. Align each to objective and requested areas. Include teacherNote rubric for speaking, teacher reading script for listening (no TTS). Shape: ${JSON.stringify(sheetShape)}. Self-assessment choices: 혼자 할 수 있어요 / 조금 도움을 받으면 할 수 있어요 / 더 연습하고 싶어요; answer=정답 없음.`;

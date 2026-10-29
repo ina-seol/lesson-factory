@@ -1,0 +1,2 @@
+import {sheetShape} from './shared';
+export const worksheetPrompt=`Generate exactly options.count questions, using only selected options.types and appropriate difficulty. All fields in this shape are required: ${JSON.stringify(sheetShape)}. Use Korean choices for word matching; for sentence ordering put shuffled English words in context; short reading must contain its passage. Answers must be pedagogically correct. Free writing includes a sample answer and rubric. For reviseQuestion return one question object only and respect the teacher instruction.`;
