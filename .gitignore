@@ -47,3 +47,5 @@ yarn-error.log*
 
 !.env.example
 /test-results/
+
+/site-pages/

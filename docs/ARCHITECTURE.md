@@ -16,3 +16,6 @@ Project-local skill: `.agents/skills/landing-page-design/SKILL.md` from elayades
 
 ## Trust boundaries
 Browser sends validated content to `/api/ai`. API base URL, API key and model are server environment values only. No frontend key input, remote model HTML, student identifiers or student results. AI output is untrusted plain data. Hosted access remains owner-private. Public third-party deployment requires appropriate gateway protection for the AI endpoint.
+
+## GitHub Pages target
+The existing client workspace also mounts through src/pages-main.tsx. Vite's separate Pages config generates versioned static assets for main/root Pages hosting. Hash routing preserves deep links below /lesson-factory/. The server-backed Sites target is retained. Pages currently rejects Live mode with an explicit setup message until a protected cross-origin Groq gateway is configured; no provider key is accepted in the client.

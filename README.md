@@ -104,3 +104,9 @@ AI_MODEL=your-available-json-capable-model
 ## 디자인 참고
 
 프로젝트에 `elayadesign/ai-design-skills`의 MIT 스킬을 포함했습니다. `.agents/skills/landing-page-design/`에 원본과 라이선스가 있습니다. 마케팅 페이지 구성은 제외하고 시각 계층·간격·상호작용 원칙을 참고했습니다. 자세한 적용 범위는 `docs/ARCHITECTURE.md`에 기록했습니다.
+
+## GitHub Pages 실행
+https://ina-seol.github.io/lesson-factory/ 에서 로그인 없이 사용합니다.
+`npm run build:pages`는 기존 React 앱으로 정적 배포 파일 `index.html`, `pages-assets/`를 생성합니다. 해당 파일과 `.nojekyll`을 main에 함께 커밋하면 기존 main/root Pages 설정이 배포합니다. 원본은 `src/`, 진입점은 `src/pages-main.tsx`, 설정은 `vite.pages.config.ts`입니다.
+Pages는 서버 API를 실행할 수 없으므로 현재 Mock 모드로 사용합니다. Groq 키를 GitHub 저장소, 브라우저 또는 Pages 빌드 환경변수에 넣지 마세요. 실제 AI는 별도 보호된 서버 API를 연결해야 합니다.
+주소별 브라우저 저장소가 분리되므로 기존 Sites 수업은 JSON 백업 후 Pages에서 불러오세요.
