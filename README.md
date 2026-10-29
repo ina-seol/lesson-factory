@@ -108,5 +108,20 @@ AI_MODEL=your-available-json-capable-model
 ## GitHub Pages 실행
 https://ina-seol.github.io/lesson-factory/ 에서 로그인 없이 사용합니다.
 `npm run build:pages`는 기존 React 앱으로 정적 배포 파일 `index.html`, `pages-assets/`를 생성합니다. 해당 파일과 `.nojekyll`을 main에 함께 커밋하면 기존 main/root Pages 설정이 배포합니다. 원본은 `src/`, 진입점은 `src/pages-main.tsx`, 설정은 `vite.pages.config.ts`입니다.
-Pages는 서버 API를 실행할 수 없으므로 현재 Mock 모드로 사용합니다. Groq 키를 GitHub 저장소, 브라우저 또는 Pages 빌드 환경변수에 넣지 마세요. 실제 AI는 별도 보호된 서버 API를 연결해야 합니다.
+Pages는 서버 API를 실행할 수 없습니다. 설정의 Groq 서버 연결에 별도 Worker 주소를 등록하면 실제 AI를 사용할 수 있습니다. Groq 키를 GitHub 저장소, 브라우저 또는 Pages 빌드 환경변수에 넣지 마세요. 실제 AI는 별도 보호된 서버 API를 연결해야 합니다.
 주소별 브라우저 저장소가 분리되므로 기존 Sites 수업은 JSON 백업 후 Pages에서 불러오세요.
+
+
+## Groq API 서버 연결 (Cloudflare Worker)
+1. Cloudflare 계정으로 터미널에서 `npx wrangler login` 실행.
+2. 프로젝트 폴더에서 아래 명령 실행. secret put 프롬프트에만 값을 입력하며 채팅·코드·GitHub에는 기록하지 않습니다.
+```
+npx wrangler secret put AI_API_KEY --config api-worker/wrangler.jsonc
+npx wrangler secret put APP_ACCESS_TOKEN --config api-worker/wrangler.jsonc
+npx wrangler deploy --config api-worker/wrangler.jsonc
+```
+`AI_API_KEY`는 Groq 키입니다. `APP_ACCESS_TOKEN`은 별도로 만든 24자 이상의 임의 접속 암호입니다. 둘을 동일하게 설정하지 마세요.
+3. GitHub Pages 앱 → 설정 → Groq 서버 연결: 배포 결과의 workers.dev 주소와 APP_ACCESS_TOKEN 입력 → 연결 설정 저장 → 실제 AI 연결 선택.
+접속 암호는 메모리에만 보관합니다. 페이지를 새로고침하면 다시 입력하세요. Groq 키는 앱에 입력하지 않습니다.
+기본 모델은 llama-3.3-70b-versatile이며 계정의 모델 권한에 맞게 Worker 환경변수 AI_MODEL을 수정할 수 있습니다.
+서버는 지정 출처 CORS와 접속 암호를 검사합니다. 출처 검사는 인증을 대신하지 않습니다. 암호를 가진 사용자만 이용하도록 관리하세요. V1에는 사용자별 사용량 제한이나 다중 사용자 인증이 없습니다.

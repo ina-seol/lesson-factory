@@ -93,3 +93,16 @@ test('Speed Quiz uses elapsed wall-clock time and Matching ignores duplicate mat
   assert.deepEqual(matchPair('a', 'a', []), { matched: ['a'], correct: true });
   assert.deepEqual(matchPair('a', 'a', ['a']), { matched: ['a'], correct: false });
 });
+
+// A public gateway must reject requests before making any paid provider call.
+import {gateway} from '../api-worker/index';
+test('Groq gateway handles preflight and rejects unauthorized calls without provider usage',async()=>{
+ let calls=0;const fetcher=(async()=>{calls++;throw new Error('unexpected provider call');}) as typeof fetch;
+ const env={APP_ACCESS_TOKEN:'test-access-token-at-least-24-characters'};
+ const url='https://api.example.com/api/ai';
+ assert.equal((await gateway(new Request(url,{method:'OPTIONS',headers:{Origin:'https://ina-seol.github.io'}}),env,fetcher)).status,204);
+ assert.equal((await gateway(new Request(url,{method:'POST',headers:{Origin:'https://other.example'}}),env,fetcher)).status,403);
+ assert.equal((await gateway(new Request(url,{method:'POST',headers:{Origin:'https://ina-seol.github.io'}}),env,fetcher)).status,401);
+ const missing=await gateway(new Request(url,{method:'POST',headers:{Origin:'https://ina-seol.github.io',Authorization:'Bearer '+env.APP_ACCESS_TOKEN}}),env,fetcher);
+ assert.equal(missing.status,503);assert.equal(missing.headers.get('Access-Control-Allow-Origin'),'https://ina-seol.github.io');assert.equal(calls,0);
+});
