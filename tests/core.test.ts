@@ -106,3 +106,22 @@ test('Groq gateway handles preflight and rejects unauthorized calls without prov
  const missing=await gateway(new Request(url,{method:'POST',headers:{Origin:'https://ina-seol.github.io',Authorization:'Bearer '+env.APP_ACCESS_TOKEN}}),env,fetcher);
  assert.equal(missing.status,503);assert.equal(missing.headers.get('Access-Control-Allow-Origin'),'https://ina-seol.github.io');assert.equal(calls,0);
 });
+
+test('provider failures distinguish status without exposing provider response or secrets', async () => {
+ for (const status of [400,401,403,404,413,429,500]) {
+  const response=await handleAI(new Request('https://lesson.example/api/ai',{
+   method:'POST',body:JSON.stringify({action:'lesson',input:sampleIntake})
+  }),{AI_API_KEY:'test-secret'},async()=>new Response('private-provider-detail test-secret',{status}));
+  assert.equal(response.status,502);
+  const body=await response.text();
+  assert.ok(body.includes(String(status)));
+  assert.ok(!body.includes('test-secret'));
+  assert.ok(!body.includes('private-provider-detail'));
+ }
+});
+test('provider timeout has a distinct recoverable message',async()=>{
+ const response=await handleAI(new Request('https://lesson.example/api/ai',{
+  method:'POST',body:JSON.stringify({action:'lesson',input:sampleIntake})
+ }),{AI_API_KEY:'test-secret'},async()=>{throw new DOMException('private-detail','TimeoutError');});
+ assert.match(await response.text(),/45초/);
+});
