@@ -2,5 +2,5 @@
  "name":"lesson-factory-api",
  "main":"index.ts",
  "compatibility_date":"2026-10-01",
- "vars":{"ALLOWED_ORIGIN":"https://ina-seol.github.io","AI_MODEL":"llama-3.3-70b-versatile"}
+ "vars":{"ALLOWED_ORIGIN":"https://ina-seol.github.io","AI_MODEL":"openai/gpt-oss-120b"}
 }

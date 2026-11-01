@@ -123,5 +123,5 @@ npx wrangler deploy --config api-worker/wrangler.jsonc
 `AI_API_KEY`는 Groq 키입니다. `APP_ACCESS_TOKEN`은 별도로 만든 24자 이상의 임의 접속 암호입니다. 둘을 동일하게 설정하지 마세요.
 3. GitHub Pages 앱 → 설정 → Groq 서버 연결: 배포 결과의 workers.dev 주소와 APP_ACCESS_TOKEN 입력 → 연결 설정 저장 → 실제 AI 연결 선택.
 접속 암호는 메모리에만 보관합니다. 페이지를 새로고침하면 다시 입력하세요. Groq 키는 앱에 입력하지 않습니다.
-기본 모델은 llama-3.3-70b-versatile이며 계정의 모델 권한에 맞게 Worker 환경변수 AI_MODEL을 수정할 수 있습니다.
+기본 모델은 openai/gpt-oss-120b이며 계정의 모델 권한에 맞게 Worker 환경변수 AI_MODEL을 수정할 수 있습니다.
 서버는 지정 출처 CORS와 접속 암호를 검사합니다. 출처 검사는 인증을 대신하지 않습니다. 암호를 가진 사용자만 이용하도록 관리하세요. V1에는 사용자별 사용량 제한이나 다중 사용자 인증이 없습니다.
