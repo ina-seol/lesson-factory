@@ -1,3 +1,4 @@
+import {emojiFor} from '../materials/lexicon';
 import {mockExtra} from '../materials/mockExtra';
 import type { AIRequest, Blueprint, Intake, Question, Sheet, Game, WorksheetOptions, AssessmentOptions } from '../model/schema';
 export const meanings:Record<string,string>={draw:'그리다',read:'읽다',write:'쓰다',sing:'노래하다',dance:'춤추다',cook:'요리하다',jump:'뛰다',run:'달리다',walk:'걷다',swim:'수영하다',cat:'고양이',dog:'개',book:'책',pencil:'연필',apple:'사과',red:'빨간색',blue:'파란색',happy:'행복한',help:'돕다',play:'놀다'};
@@ -28,12 +29,13 @@ export function mockAssessment(b:Blueprint,o:AssessmentOptions):Sheet{
  s.questions.forEach((q,n)=>{const area=o.areas[n%o.areas.length];q.teacherNote=`평가 영역: ${area}. `+q.teacherNote;if(area==='듣기'){q.prompt='선생님이 읽어 주는 표현을 듣고 쓰세요.';q.teacherNote+=`교사 낭독: ${b.targetExpressions[n%b.targetExpressions.length]}`;q.context='';q.answer=b.targetExpressions[n%b.targetExpressions.length];}if(area==='말하기'){q.prompt='오늘 배운 표현으로 짝과 묻고 답하세요.';q.teacherNote+='교사 관찰: 상황에 맞는 표현 사용과 상대의 말에 반응하는지 확인.';}});
  if(count===3)s.questions[2]={...baseQ(2,'자기평가'),prompt:'오늘 나는…',choices:['혼자 할 수 있어요','조금 도움을 받으면 할 수 있어요','더 연습하고 싶어요'],answer:'정답 없음',teacherNote:'자기평가는 정오 점수에 포함하지 않습니다.'};return s;
 }
+const clean=<T extends object>(x:T):T=>Object.fromEntries(Object.entries(x).filter(([,v])=>v!==undefined)) as T;
 export function mockGame(b:Blueprint,type:Game['gameType']):Game{
  const words=b.vocabulary.length?b.vocabulary:b.targetExpressions;
- if(type==='matching')return {gameType:type,title:'Word Partners',pairs:words.slice(0,8).map((w,n)=>({id:`pair-${n}`,left:w,right:meaning(w)})),usedVocabulary:b.vocabulary};
- if(type==='speed-quiz')return {gameType:type,title:'60 Second Challenge',cards:words.map((w,n)=>({id:`card-${n}`,prompt:meaning(w),answer:w})),usedVocabulary:b.vocabulary};
+ if(type==='matching')return {gameType:type,title:'Word Partners',pairs:words.slice(0,8).map((w,n)=>clean({id:`pair-${n}`,left:w,right:meaning(w),emoji:emojiFor(w)})),usedVocabulary:b.vocabulary};
+ if(type==='speed-quiz')return {gameType:type,title:'60 Second Challenge',cards:words.map((w,n)=>clean({id:`card-${n}`,prompt:meaning(w),answer:w,emoji:emojiFor(w)})),usedVocabulary:b.vocabulary};
  const fallback=['한 번 더 생각해 보세요','짝과 다시 확인해 보세요','뜻을 다시 살펴보세요'];
- return {gameType:type,title:'Expression Challenge',questions:words.slice(0,8).map((w,n)=>{const correct=meaning(w);const others=[...words.filter(x=>x!==w).map(meaning),...fallback].filter((v,i,a)=>v!==correct&&a.indexOf(v)===i).slice(0,3);const pos=n%4;others.splice(pos,0,correct);return {id:`quiz-${n}`,question:`“${w}”의 알맞은 뜻은 무엇일까요?`,choices:others,answerIndex:pos,usedVocabulary:b.vocabulary.includes(w)?[w]:[]};}),usedVocabulary:b.vocabulary};
+ return {gameType:type,title:'Expression Challenge',questions:words.slice(0,8).map((w,n)=>{const correct=meaning(w);const others=[...words.filter(x=>x!==w).map(meaning),...fallback].filter((v,i,a)=>v!==correct&&a.indexOf(v)===i).slice(0,3);const pos=n%4;others.splice(pos,0,correct);return {...clean({emoji:emojiFor(w)}),id:`quiz-${n}`,question:`“${w}”의 알맞은 뜻은 무엇일까요?`,choices:others,answerIndex:pos,usedVocabulary:b.vocabulary.includes(w)?[w]:[]};}),usedVocabulary:b.vocabulary};
 }
 export function mockGenerate(r:AIRequest):unknown{
  switch(r.action){case'extra':return mockExtra(r.blueprint,r.options);case'lesson':return mockLesson(r.input);case'worksheet':return mockWorksheet(r.blueprint,r.options);case'assessment':return mockAssessment(r.blueprint,r.options);case'game':return mockGame(r.blueprint,r.gameType);case'reviseActivity':return {...r.activity,title:'Move & Share',interaction:'group',description:`모둠에서 한 명이 행동을 보여주면 친구들이 “${r.blueprint.targetExpressions[0]}”를 사용해 묻고 답합니다. 역할을 번갈아 맡습니다.\n교사 요청 메모: ${r.instruction}`};case'reviseQuestion':return {...r.question,prompt:'오늘 배운 핵심 표현으로 문장을 완성하세요.',context:r.blueprint.targetExpressions[0].replace(/\S+$/,'________'),answer:r.blueprint.targetExpressions[0].split(' ').at(-1),choices:[],teacherNote:`교사 요청 메모: ${r.instruction}`};}

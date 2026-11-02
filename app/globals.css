@@ -81,3 +81,13 @@ img.picture{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
 .script-panel{margin:0 0 24px;padding:16px 20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}.script-panel summary{cursor:pointer;font-weight:700;color:var(--ink)}.script-panel p{margin:12px 0}.script-panel textarea{min-height:200px}.script-panel .btn{margin-top:12px}
 .dialogue-row{display:grid;grid-template-columns:90px 1fr 1fr 1fr auto;gap:8px;margin-bottom:8px}.dialogue-row input{min-width:0}
 @media(max-width:680px){.dialogue-row{grid-template-columns:1fr 1fr}}
+/* 게임: 그림 + 짝 맞추기 카드 */
+.game-picture{font-size:clamp(72px,14vw,150px);line-height:1;margin:8px 0 0;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}
+.speed-card .game-picture{margin:12px 0 0}.speed-card h2{margin:16px 0 24px}
+.match-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin:24px 0}
+.match-tile{position:relative;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px;border:3px solid var(--t-line);border-radius:22px;background:#fff;color:var(--t-ink);font-family:var(--font-cute);transition:transform .18s var(--motion),background .18s var(--motion),border-color .18s var(--motion)}
+.match-tile.word{background:var(--t-soft)}.match-tile .mt-emoji{font-size:64px;line-height:1;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}.match-tile .mt-text{font-size:30px;line-height:1.2;overflow-wrap:anywhere}.match-tile small{font-size:16px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:var(--muted);font-weight:700}
+.match-tile:hover:not(:disabled){transform:translateY(-3px);border-color:var(--t-dot)}.match-tile.selected{border-color:var(--t-primary);background:#fff;box-shadow:0 0 0 4px var(--t-soft);transform:scale(1.04)}
+.match-tile.wrong{border-color:#c4533f;background:#fdeceb;animation:tile-shake .4s}.match-tile.matched{opacity:.45;border-style:dashed;background:var(--t-soft)}.match-tile.matched svg{position:absolute;top:10px;right:10px}
+@keyframes tile-shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(prefers-reduced-motion:reduce){.match-tile,.match-tile.wrong{transition:none;animation:none}}

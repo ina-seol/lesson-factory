@@ -20,11 +20,11 @@ export const generatedBlueprintSchema = blueprintSchema.superRefine((b,c) => {
 });
 export const questionSchema = z.object({ id: required, type: text, prompt: text, context: text, choices: strings, answer: text, teacherNote: text, usedVocabulary: strings });
 export const sheetSchema = z.object({ title: text, instructions: text, questions: z.array(questionSchema).min(1).max(30), usedVocabulary: strings });
-export const quizQuestionSchema = z.object({ id: required, question: required, choices: z.array(required).length(4), answerIndex: z.number().int().min(0).max(3), usedVocabulary: strings }).refine(q=>new Set(q.choices).size===4,'선택지는 서로 달라야 합니다.');
+export const quizQuestionSchema = z.object({ id: required, question: required, choices: z.array(required).length(4), answerIndex: z.number().int().min(0).max(3), emoji: z.string().max(16).optional(), usedVocabulary: strings }).refine(q=>new Set(q.choices).size===4,'선택지는 서로 달라야 합니다.');
 export const gameSchema = z.discriminatedUnion('gameType', [
  z.object({gameType:z.literal('quiz-show'), title:required, questions:z.array(quizQuestionSchema).min(1).max(20),usedVocabulary:strings}),
- z.object({gameType:z.literal('speed-quiz'),title:required,cards:z.array(z.object({id:required,prompt:required,answer:required})).min(1).max(30),usedVocabulary:strings}),
- z.object({gameType:z.literal('matching'),title:required,pairs:z.array(z.object({id:required,left:required,right:required})).min(2).max(12),usedVocabulary:strings})
+ z.object({gameType:z.literal('speed-quiz'),title:required,cards:z.array(z.object({id:required,prompt:required,answer:required,emoji:z.string().max(16).optional()})).min(1).max(30),usedVocabulary:strings}),
+ z.object({gameType:z.literal('matching'),title:required,pairs:z.array(z.object({id:required,left:required,right:required,emoji:z.string().max(16).optional()})).min(2).max(12),usedVocabulary:strings})
 ]);
 export const validatedGameSchema=gameSchema.superRefine((g,c)=>{if(g.gameType==='matching'&&(new Set(g.pairs.map(p=>p.id)).size!==g.pairs.length||new Set(g.pairs.map(p=>p.left)).size!==g.pairs.length||new Set(g.pairs.map(p=>p.right)).size!==g.pairs.length))c.addIssue({code:'custom',message:'매칭 카드에는 중복 ID나 동일한 항목이 없어야 합니다.'});});
 export const worksheetOptionsSchema=z.object({difficulty:z.enum(['쉬움','보통','도전']),count:z.union([z.literal(5),z.literal(10),z.literal(15)]),types:z.array(z.enum(questionTypes)).min(1)});
