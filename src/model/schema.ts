@@ -1,3 +1,4 @@
+import {extraSchema,extraOptionsSchema} from './extras';
 import { z } from 'zod';
 
 const text = z.string().max(4000);
@@ -29,11 +30,12 @@ export const validatedGameSchema=gameSchema.superRefine((g,c)=>{if(g.gameType===
 export const worksheetOptionsSchema=z.object({difficulty:z.enum(['쉬움','보통','도전']),count:z.union([z.literal(5),z.literal(10),z.literal(15)]),types:z.array(z.enum(questionTypes)).min(1)});
 export const assessmentOptionsSchema=z.object({kind:z.enum(['Exit Ticket','5문항 Quiz','10문항 Quiz']),areas:strings.min(1)});
 export const materialSchema=<T extends z.ZodTypeAny>(data:T)=>z.object({data,blueprintRevision:z.number().int().min(1),createdAt:required,reviewed:z.boolean()});
-export const lessonSchema=z.object({id:required,createdAt:required,updatedAt:required,status:z.enum(['draft','confirmed']),input:intakeSchema,blueprint:blueprintSchema,blueprintRevision:z.number().int().min(1),worksheet:materialSchema(sheetSchema).optional(),game:materialSchema(gameSchema).optional(),assessment:materialSchema(sheetSchema).optional()});
+export const lessonSchema=z.object({id:required,createdAt:required,updatedAt:required,status:z.enum(['draft','confirmed']),input:intakeSchema,blueprint:blueprintSchema,blueprintRevision:z.number().int().min(1),worksheet:materialSchema(sheetSchema).optional(),game:materialSchema(gameSchema).optional(),assessment:materialSchema(sheetSchema).optional(),flashcards:materialSchema(extraSchema.options[0]).optional(),slides:materialSchema(extraSchema.options[1]).optional(),wordquiz:materialSchema(extraSchema.options[2]).optional()});
 export const preferencesSchema=z.object({grade:z.number().int().min(3).max(6),duration:z.number().int().min(10).max(120),studentCount:z.number().int().min(1).max(40),environment:strings,style:z.enum(styles),mode:z.enum(['mock','live'])});
 export const workspaceSchema=z.object({version:z.literal(1),lessons:z.array(lessonSchema).max(500),preferences:preferencesSchema,draft:intakeSchema.optional(),activeLessonId:text.optional()});
 export const requestSchema=z.discriminatedUnion('action',[
  z.object({action:z.literal('lesson'),input:validIntakeSchema}),
+ z.object({action:z.literal('extra'),blueprint:generatedBlueprintSchema,options:extraOptionsSchema}),
  z.object({action:z.literal('worksheet'),blueprint:generatedBlueprintSchema,options:worksheetOptionsSchema}),
  z.object({action:z.literal('assessment'),blueprint:generatedBlueprintSchema,options:assessmentOptionsSchema}),
  z.object({action:z.literal('game'),blueprint:generatedBlueprintSchema,gameType:z.enum(['quiz-show','speed-quiz','matching'])}),

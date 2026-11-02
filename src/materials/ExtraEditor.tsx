@@ -1,0 +1,17 @@
+import {useState} from 'react';
+import {validExtraSchema,type Extra} from '../model/extras';
+import {createId} from '../model/id';
+import {Field,Modal,ErrorState} from '../components/ui';
+export function ExtraEditor({data,onSave,onClose}:{data:Extra;onSave:(x:Extra)=>void;onClose:()=>void}){
+ const [draft,setDraft]=useState<Extra>(structuredClone(data)),[error,setError]=useState('');
+ const items=draft.kind==='flashcards'?draft.cards:draft.kind==='slides'?draft.slides:draft.questions;
+ function setItems(next:typeof items){setDraft(draft.kind==='flashcards'?{...draft,cards:next as typeof draft.cards}:draft.kind==='slides'?{...draft,slides:next as typeof draft.slides}:{...draft,questions:next as typeof draft.questions});}
+ function edit(i:number,key:string,value:string|string[]){setItems(items.map((x,j)=>i===j?{...x,[key]:value}:x) as typeof items);}
+ function shift(i:number,dir:number){const next=[...items];[next[i],next[i+dir]]=[next[i+dir],next[i]];setItems(next as typeof items);}
+ return <Modal wide title="자료 내용 편집" onClose={onClose}><p>수정 후 저장하면 검토 상태가 초안으로 바뀝니다.</p><Field label="자료 제목"><input maxLength={240} value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})}/></Field>
+ {items.map((item,i)=><section className="extra-edit-item" key={item.id}><div className="inline"><strong>{i+1}</strong><button className="btn small" disabled={!i} onClick={()=>shift(i,-1)}>위로</button><button className="btn small" disabled={i===items.length-1} onClick={()=>shift(i,1)}>아래로</button><button className="btn small" disabled={items.length===1} onClick={()=>setItems(items.filter((_,j)=>j!==i) as typeof items)}>삭제</button></div>
+ {'front' in item?<><Field label="영어"><input maxLength={240} value={item.front} onChange={e=>edit(i,'front',e.target.value)}/></Field><Field label="한국어 뜻"><input maxLength={240} value={item.back} onChange={e=>edit(i,'back',e.target.value)}/></Field></>:'body' in item?<><Field label="슬라이드 제목"><input maxLength={100} value={item.title} onChange={e=>edit(i,'title',e.target.value)}/></Field><Field label="학생에게 보여줄 내용"><textarea maxLength={600} value={item.body} onChange={e=>edit(i,'body',e.target.value)}/></Field><Field label="발표자 노트"><textarea maxLength={1200} value={item.notes} onChange={e=>edit(i,'notes',e.target.value)}/></Field></>:<><Field label="문제"><input maxLength={240} value={item.prompt} onChange={e=>edit(i,'prompt',e.target.value)}/></Field>{item.choices.map((c,j)=><Field key={j} label={`선택지 ${j+1}`}><input maxLength={240} value={c} onChange={e=>edit(i,'choices',item.choices.map((v,k)=>k===j?e.target.value:v))}/></Field>)}<Field label="정답 (객관식은 선택지와 같게)"><input maxLength={240} value={item.answer} onChange={e=>edit(i,'answer',e.target.value)}/></Field></>}
+ </section>)}
+ {draft.kind==='slides'&&<button className="btn" disabled={items.length>=20} onClick={()=>setDraft({...draft,slides:[...draft.slides,{id:createId(),title:'새 슬라이드',body:'내용을 입력해 주세요.',notes:''}]})}>슬라이드 추가</button>}
+ {error&&<ErrorState message={error}/>}<div className="modal-actions"><button className="btn" onClick={onClose}>취소</button><button className="btn primary" onClick={()=>{const parsed=validExtraSchema.safeParse(draft);if(!parsed.success){setError(parsed.error.issues[0].message);return;}onSave(parsed.data);}}>수정 저장</button></div></Modal>;
+}

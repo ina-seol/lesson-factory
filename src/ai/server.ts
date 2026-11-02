@@ -1,3 +1,4 @@
+import {extraPrompt} from '../prompts/extra';
 import { requestSchema, type AIRequest } from '../model/schema';
 import { validateResponse } from './provider';
 import { policy } from '../prompts/shared';
@@ -6,7 +7,7 @@ import { worksheetPrompt } from '../prompts/worksheet';
 import { assessmentPrompt } from '../prompts/assessment';
 import { gameContentPrompt } from '../prompts/gameContent';
 import { reviseActivityPrompt } from '../prompts/reviseActivity';
-export const prompts:Record<AIRequest['action'],string>={lesson:lessonBlueprintPrompt,worksheet:worksheetPrompt,assessment:assessmentPrompt,game:gameContentPrompt,reviseActivity:reviseActivityPrompt,reviseQuestion:worksheetPrompt};
+export const prompts:Record<AIRequest['action'],string>={extra:extraPrompt,lesson:lessonBlueprintPrompt,worksheet:worksheetPrompt,assessment:assessmentPrompt,game:gameContentPrompt,reviseActivity:reviseActivityPrompt,reviseQuestion:worksheetPrompt};
 class ProviderError extends Error {}
 function providerFailure(status:number) {
  const messages:Record<number,string>={
