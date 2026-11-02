@@ -39,7 +39,7 @@ function draw(pptx:Pptx,item:SlideItem&{notes?:string},n:number,total:number,dec
   slide.addShape('roundRect',{x:.9,y:.9,w:5.6,h:5.6,fill:{color:C.white},line:{color:C.line,width:3},rectRadius:.4});
   picture(slide,item,1.2,1.2,5,5);
   const word=layout==='check'?'?':item.title;
-  slide.addText(word,{x:7.1,y:1.9,w:5.6,h:1.6,fontSize:layout==='check'?96:68,bold:true,color:C.green,margin:0,fit:'shrink',valign:'middle',fontFace:FONT});
+  slide.addText(word,{x:7.1,y:1.9,w:5.6,h:1.6,fontSize:layout==='check'?96:Math.max(24,Math.min(68,Math.floor(660/Math.max(1,Array.from(word).length)))),wrap:false,bold:true,color:C.green,margin:0,fit:'shrink',valign:'middle',fontFace:FONT});
   if(layout==='word'&&reveal&&(item.meaningEmoji||item.meaningImage))picture(slide,{...item,emoji:item.meaningEmoji,image:item.meaningImage},11.3,3.6,1.3,1.3);
   if(layout==='word'&&item.sub&&reveal)slide.addText(item.sub,{x:7.1,y:3.7,w:(item.meaningEmoji||item.meaningImage)?4.1:5.6,h:1.1,fontSize:40,bold:true,color:C.accent,margin:0,fit:'shrink',valign:'top',fontFace:FONT});
   if(layout==='check')slide.addText(item.title,{x:7.1,y:3.7,w:5.6,h:1.2,fontSize:28,color:C.ink,margin:0,fontFace:FONT});
