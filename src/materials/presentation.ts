@@ -1,6 +1,7 @@
 import type {Extra} from '../model/extras';
 import type {SlideItem} from './Visual';
 import {getTheme} from './theme';
+import {parseLines} from './script';
 export type SlideDeck=Extract<Extra,{kind:'slides'}>;
 export type CardDeck=Extract<Extra,{kind:'flashcards'}>;
 function wrap(line:string):string[]{
@@ -9,7 +10,7 @@ function wrap(line:string):string[]{
  const space=chars.slice(0,39).lastIndexOf(' ');if(space>=18)cut=space;
  return [chars.slice(0,cut).join(''),...wrap(chars.slice(cut).join('').trimStart())];
 }
-export function slidePages(deck:SlideDeck){return deck.slides.flatMap(s=>{const lines=s.body.split('\n').flatMap(wrap);return Array.from({length:Math.max(1,Math.ceil(lines.length/7))},(_,i)=>({...s,id:s.id+'-'+i,body:lines.slice(i*7,(i+1)*7).join('\n')}));});}
+export function slidePages(deck:SlideDeck){return deck.slides.flatMap(s=>{if(s.layout==='dialogue')return [s];const lines=s.body.split('\n').flatMap(wrap);return Array.from({length:Math.max(1,Math.ceil(lines.length/7))},(_,i)=>({...s,id:s.id+'-'+i,body:lines.slice(i*7,(i+1)*7).join('\n')}));});}
 /** 플래시카드를 PPT처럼 보여 줄 슬라이드 목록: 그림+영어 → 뜻 공개. */
 export function cardPages(deck:CardDeck):SlideItem[]{return deck.cards.map(c=>({layout:'word' as const,title:c.front,body:'',sub:c.back,emoji:c.emoji,image:c.image,meaningEmoji:c.meaningEmoji,meaningImage:c.meaningImage}));}
 let C={green:'2B7658',ink:'24413A',cream:'F2FAF5',mint:'D8F1E2',line:'BFE3CF',muted:'5F746B',accent:'C2603E',white:'FFFFFF',dot:'8FD3B0'};
@@ -50,6 +51,12 @@ function draw(pptx:Pptx,item:SlideItem&{notes?:string},n:number,total:number,dec
   slide.addText(item.body,{x:.9,y:1.9,w:hasPic?8:11.5,h:3,fontSize:52,bold:true,color:C.green,margin:0,fit:'shrink',valign:'middle',fontFace:FONT});
   if(item.sub)slide.addText(item.sub,{x:.9,y:5.1,w:11,h:.8,fontSize:28,color:C.ink,margin:0,fontFace:FONT});
   if(hasPic)picture(slide,item,9.4,1.9,3,3);
+  footer(slide,deck,n,total);
+ }else if(layout==='dialogue'){
+  slide.background={color:C.cream};bubbles(slide,C.mint);title();
+  const lines=parseLines(item.body),h=Math.min(1.4,5.2/Math.max(1,lines.length)),k=Math.min(1,h/1.2);
+  lines.forEach((l,i)=>{const y=1.75+i*h;slide.addShape('roundRect',{x:.9,y:y+.05,w:1.9,h:Math.min(.55,h-.2),rectRadius:.2,fill:{color:C.mint},line:{color:C.line,width:1}});slide.addText(l.speaker,{x:.9,y:y+.05,w:1.9,h:Math.min(.55,h-.2),align:'center',valign:'middle',fontSize:Math.round(16*k+2),bold:true,color:C.green,margin:0,fit:'shrink',fontFace:FONT});
+   slide.addText([{text:l.en,options:{fontSize:Math.round(26*k),bold:true,color:C.green,breakLine:true}},...(l.ko?[{text:l.ko,options:{fontSize:Math.round(17*k),color:C.ink,breakLine:!!l.pron}}]:[]),...(l.pron?[{text:l.pron,options:{fontSize:Math.round(15*k),color:C.accent}}]:[])],{x:3.1,y,w:9.3,h:h-.05,valign:'top',margin:0,fit:'shrink',fontFace:FONT});});
   footer(slide,deck,n,total);
  }else if(layout==='activity'||layout==='practice'){
   slide.background={color:C.cream};slide.addShape('rect',{x:0,y:0,w:.35,h:7.5,fill:{color:C.dot},line:{color:C.dot,width:0}});

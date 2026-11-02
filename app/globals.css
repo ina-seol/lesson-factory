@@ -69,3 +69,15 @@ img.picture{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
 @media print{.extra-paper .print-card .pc-pic{height:32mm;font-size:48pt;padding:3mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}.extra-paper .slide-view{break-inside:avoid;margin-bottom:6mm}.paper-header{margin:0!important;padding:4mm 6mm!important}.paper-header,.paper-header *{color:#000!important}.paper-header{background:var(--t-soft)!important}.extra-paper .print-card{background:#fff;border-color:#000!important}}
 @media(prefers-reduced-motion:reduce){.stage,.theme-picker button{transition:none}}
 .print-card{container-type:inline-size}.print-card strong{white-space:nowrap;overflow:hidden;text-overflow:clip}
+/* 역할극 장면 슬라이드 */
+.sv-dialogue{padding:3.4cqw 5cqw 3cqw;display:flex;flex-direction:column;gap:1.6cqw;min-width:0}.sv-dialogue h1{font-size:3.6cqw}
+.sv-dialogue ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:calc(1.2cqw*var(--s,1))}
+.sv-dialogue li{display:grid;grid-template-columns:12cqw 1fr;gap:2cqw;align-items:start}
+.sv-dialogue .who{display:grid;place-items:center;min-height:calc(4cqw*var(--s,1));padding:0 1cqw;border-radius:99px;background:var(--t-soft);border:2px solid var(--t-line);color:var(--t-primary);font-size:calc(1.9cqw*var(--s,1) + .4cqw);line-height:1.2;text-align:center;font-weight:700}
+.sv-dialogue p{margin:0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+.sv-dialogue .en{font-family:var(--font-cute);font-weight:700;color:var(--t-primary);font-size:calc(3.1cqw*var(--s,1) + .3cqw);line-height:1.25}
+.sv-dialogue .ko{color:var(--t-ink);font-size:calc(2cqw*var(--s,1) + .2cqw);font-weight:600}.sv-dialogue .pron{color:var(--t-accent);font-size:calc(1.8cqw*var(--s,1) + .2cqw);font-weight:600}
+.layout-dialogue{display:block}
+.script-panel{margin:0 0 24px;padding:16px 20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}.script-panel summary{cursor:pointer;font-weight:700;color:var(--ink)}.script-panel p{margin:12px 0}.script-panel textarea{min-height:200px}.script-panel .btn{margin-top:12px}
+.dialogue-row{display:grid;grid-template-columns:90px 1fr 1fr 1fr auto;gap:8px;margin-bottom:8px}.dialogue-row input{min-width:0}
+@media(max-width:680px){.dialogue-row{grid-template-columns:1fr 1fr}}
