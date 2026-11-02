@@ -1,8 +1,11 @@
 import {z} from 'zod';
 const short=z.string().trim().min(1).max(240),vocabulary=z.array(z.string().max(120)).max(60);
+const visual={emoji:z.string().max(16).optional(),image:z.string().max(160000).regex(/^data:image\/(jpeg|png|webp);base64,/).optional()};
+export const slideLayouts=['title','objective','word','expression','activity','practice','check','wrapup','text'] as const;
+export type SlideLayout=typeof slideLayouts[number];
 export const extraSchema=z.discriminatedUnion('kind',[
- z.object({kind:z.literal('flashcards'),title:short,cards:z.array(z.object({id:short,front:short,back:short})).min(1).max(30),usedVocabulary:vocabulary}),
- z.object({kind:z.literal('slides'),title:short,slides:z.array(z.object({id:short,title:z.string().trim().min(1).max(100),body:z.string().trim().min(1).max(600),notes:z.string().max(1200)})).min(1).max(20),usedVocabulary:vocabulary}),
+ z.object({kind:z.literal('flashcards'),title:short,cards:z.array(z.object({id:short,front:short,back:short,...visual})).min(1).max(30),usedVocabulary:vocabulary}),
+ z.object({kind:z.literal('slides'),title:short,slides:z.array(z.object({id:short,title:z.string().trim().min(1).max(100),body:z.string().trim().max(600),notes:z.string().max(1200),layout:z.enum(slideLayouts).optional(),sub:z.string().trim().max(200).optional(),...visual})).min(1).max(20),usedVocabulary:vocabulary}),
  z.object({kind:z.literal('wordquiz'),title:short,format:z.enum(['choice','spelling']),questions:z.array(z.object({id:short,prompt:short,answer:short,choices:z.array(short).max(4)})).min(1).max(20),usedVocabulary:vocabulary})
 ]);
 export const validExtraSchema=extraSchema.superRefine((x,c)=>{
