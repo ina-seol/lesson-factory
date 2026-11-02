@@ -1,6 +1,7 @@
 import {z} from 'zod';
 const short=z.string().trim().min(1).max(240),vocabulary=z.array(z.string().max(120)).max(60);
-const visual={emoji:z.string().max(16).optional(),image:z.string().max(160000).regex(/^data:image\/(jpeg|png|webp);base64,/).optional()};
+const imageData=z.string().max(160000).regex(/^data:image\/(jpeg|png|webp);base64,/);
+const visual={emoji:z.string().max(16).optional(),image:imageData.optional(),meaningEmoji:z.string().max(16).optional(),meaningImage:imageData.optional()};
 export const slideLayouts=['title','objective','word','expression','activity','practice','check','wrapup','text'] as const;
 export type SlideLayout=typeof slideLayouts[number];
 export const extraSchema=z.discriminatedUnion('kind',[

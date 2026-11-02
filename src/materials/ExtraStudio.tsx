@@ -10,7 +10,7 @@ import {downloadPresentation,slidePages} from './presentation';
 import {Picture,SlideView} from './Visual';
 const names={flashcards:'플래시카드',slides:'수업 PPT',wordquiz:'단어 퀴즈'};
 export function ExtraStudio({lesson,kind,provider,onChange,onBlueprint}:{lesson:Lesson;kind:ExtraKind;provider:AIProvider;onChange:(l:Lesson)=>void;onBlueprint:()=>void}){
- const [options,setOptions]=useState<ExtraOptions>({kind,count:kind==='slides'?8:Math.min(10,lesson.blueprint.vocabulary.length)||1,source:'vocabulary',format:'choice'});
+ const [options,setOptions]=useState<ExtraOptions>({kind,count:kind==='slides'?Math.min(20,new Set(lesson.blueprint.vocabulary).size+5):Math.min(10,lesson.blueprint.vocabulary.length)||1,source:'vocabulary',format:'choice'});
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[edit,setEdit]=useState(false),[play,setPlay]=useState(false),[replace,setReplace]=useState(false),[downloading,setDownloading]=useState(false);
  const material=lesson[kind],data=material?.data,stale=isStale(lesson,kind),source=options.source==='expressions'?lesson.blueprint.targetExpressions:lesson.blueprint.vocabulary;
  const max=kind==='slides'?20:Math.min(20,new Set(source).size),invalidOptions=options.count>max||max===0||(kind==='wordquiz'&&options.format==='choice'&&new Set(lesson.blueprint.vocabulary).size<4);
