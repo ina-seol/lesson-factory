@@ -1,7 +1,7 @@
 import {emojiFor} from '../materials/lexicon';
 import {mockExtra} from '../materials/mockExtra';
 import type { AIRequest, Blueprint, Intake, Question, Sheet, Game, WorksheetOptions, AssessmentOptions } from '../model/schema';
-export const meanings:Record<string,string>={draw:'그리다',read:'읽다',write:'쓰다',sing:'노래하다',dance:'춤추다',cook:'요리하다',jump:'뛰다',run:'달리다',walk:'걷다',swim:'수영하다',cat:'고양이',dog:'개',book:'책',pencil:'연필',apple:'사과',red:'빨간색',blue:'파란색',happy:'행복한',help:'돕다',play:'놀다'};
+export const meanings:Record<string,string>={draw:'그리다',read:'읽다',write:'쓰다',sing:'노래하다',dance:'춤추다',cook:'요리하다',jump:'뛰다',run:'달리다',walk:'걷다',swim:'수영하다',cat:'고양이',dog:'개',book:'책',pencil:'연필',apple:'사과',red:'빨간색',blue:'파란색',happy:'행복한',help:'돕다',play:'놀다',"what are you doing?":'너는 무엇을 하고 있니?',"i'm drawing a picture.":'나는 그림을 그리고 있어.'};
 const meaning=(w:string)=>meanings[w.toLowerCase()]||`뜻 확인 필요 (${w})`;
 export function mockLesson(i:Intake):Blueprint{
  const mins=[.125,.2,.3,.25].map(r=>Math.floor(i.duration*r));mins.push(i.duration-mins.reduce((a,b)=>a+b,0));
@@ -33,7 +33,7 @@ const clean=<T extends object>(x:T):T=>Object.fromEntries(Object.entries(x).filt
 export function mockGame(b:Blueprint,type:Game['gameType']):Game{
  const words=b.vocabulary.length?b.vocabulary:b.targetExpressions;
  if(type==='matching')return {gameType:type,title:'Word Partners',pairs:words.slice(0,8).map((w,n)=>clean({id:`pair-${n}`,left:w,right:meaning(w),emoji:emojiFor(w)})),usedVocabulary:b.vocabulary};
- if(type==='speed-quiz')return {gameType:type,title:'60 Second Challenge',cards:words.map((w,n)=>clean({id:`card-${n}`,prompt:meaning(w),answer:w,emoji:emojiFor(w)})),usedVocabulary:b.vocabulary};
+ if(type==='speed-quiz')return {gameType:type,title:'60 Second Challenge',cards:[...new Set([...words,...b.targetExpressions])].slice(0,30).map((w,n)=>clean({id:`card-${n}`,prompt:meaning(w),answer:w,emoji:emojiFor(w)})),usedVocabulary:b.vocabulary};
  const fallback=['한 번 더 생각해 보세요','짝과 다시 확인해 보세요','뜻을 다시 살펴보세요'];
  return {gameType:type,title:'Expression Challenge',questions:words.slice(0,8).map((w,n)=>{const correct=meaning(w);const others=[...words.filter(x=>x!==w).map(meaning),...fallback].filter((v,i,a)=>v!==correct&&a.indexOf(v)===i).slice(0,3);const pos=n%4;others.splice(pos,0,correct);return {...clean({emoji:emojiFor(w)}),id:`quiz-${n}`,question:`“${w}”의 알맞은 뜻은 무엇일까요?`,choices:others,answerIndex:pos,usedVocabulary:b.vocabulary.includes(w)?[w]:[]};}),usedVocabulary:b.vocabulary};
 }

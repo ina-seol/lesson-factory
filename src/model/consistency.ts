@@ -6,7 +6,7 @@ function forms(word:string){const w=word.toLowerCase();return [w,w+'s',w+'es',w+
 export function unknownVocabulary(b:Blueprint,m:Sheet|Game|Extra):string[]{
  const allowed=new Set([...functional,...('kind' in m?tokens(b.meta.lessonTitle):[]),...b.targetExpressions.flatMap(tokens),...b.vocabulary.flatMap(tokens).flatMap(forms)]);
  let content:string[]=[];
- if('kind' in m) content=m.kind==='flashcards'?m.cards.flatMap(c=>[c.front,c.back]):m.kind==='slides'?(m.source==='script'?[]:m.slides.flatMap(s=>[s.title,s.body])):m.questions.flatMap(q=>[q.prompt,q.answer,...q.choices]);
+ if('kind' in m) content=m.kind==='flashcards'?m.cards.flatMap(c=>[c.front,c.back]):m.kind==='slides'?(m.source==='script'?[]:m.slides.flatMap(s=>[s.title,s.body,...(s.layout==='drill'?[s.sub||'']:[])])):m.questions.flatMap(q=>[q.prompt,q.answer,...q.choices]);
  else if('questions' in m) content=m.questions.flatMap(q=>'prompt' in q?[q.prompt,q.context,...q.choices,q.answer]:[q.question,...q.choices]);
  else if('cards' in m) content=m.cards.flatMap(c=>[c.prompt,c.answer]);
  else content=m.pairs.flatMap(p=>[p.left,p.right]);

@@ -1,0 +1,12 @@
+import {useState} from 'react';
+import type {Blueprint} from '../model/schema';
+import type {Extra} from '../model/extras';
+import {Field} from '../components/ui';
+import {createId} from '../model/id';
+import {makeSpeakingSlides,speakingDefaults,slot} from './speaking';
+type Slides=Extract<Extra,{kind:'slides'}>['slides'];
+export function SpeakingBuilder({blueprint,remaining,onAdd,disabled}:{blueprint:Blueprint;remaining:number;onAdd:(slides:Slides)=>void;disabled:boolean}){
+ const [draft,setDraft]=useState(()=>speakingDefaults(blueprint)),[error,setError]=useState(''),[message,setMessage]=useState('');
+ const count=draft.rows.filter(r=>r.enabled).length;
+ return <details className="script-panel speaking-builder no-print"><summary>표현 바꿔 말하기 · 반복 연습 만들기</summary><p>같은 문장 틀에 단어를 바꿔 넣어 말해요. 화면에는 힌트와 빈칸을 먼저 보여 주고, 누르면 예시 답이 나옵니다. PPTX에는 문제 다음에 정답 장이 들어갑니다.</p><p>수업의 핵심 표현: {blueprint.targetExpressions.join(' / ')}</p><Field label="반복할 문장 틀" hint={`바꿀 자리에 ${slot}를 한 번 넣으세요. 예: I like ${slot}.`}><input maxLength={200} value={draft.frame} onChange={e=>{setDraft({...draft,frame:e.target.value});setMessage('');}}/></Field><p>동사 형태·관사·단복수는 문장에 맞게 직접 확인해 주세요. 예: draw → drawing</p><div className="speaking-rows">{draft.rows.map((r,i)=><div className="speaking-row" key={i}><label><input type="checkbox" checked={r.enabled} onChange={e=>setDraft({...draft,rows:draft.rows.map((x,j)=>j===i?{...x,enabled:e.target.checked}:x)})}/>{r.word}</label><Field label={`${r.word} 힌트`}><input maxLength={100} value={r.cue} onChange={e=>setDraft({...draft,rows:draft.rows.map((x,j)=>j===i?{...x,cue:e.target.value}:x)})}/></Field><Field label={`${r.word} 바꿔 넣을 말`}><input maxLength={120} value={r.replacement} onChange={e=>setDraft({...draft,rows:draft.rows.map((x,j)=>j===i?{...x,replacement:e.target.value}:x)})}/></Field><p>{draft.frame.includes(slot)?draft.frame.replace(slot,r.replacement):'문장에 바꿀 자리를 표시해 주세요.'}</p></div>)}</div>{!draft.rows.length&&<p>먼저 수업안에 핵심 단어를 입력해 주세요.</p>}<p>{count}개 연습 · 현재 PPT에 추가 가능 {remaining}장</p>{error&&<p role="alert" className="warning-text">{error}</p>}{message&&<p role="status">{message}</p>}<button className="btn primary" disabled={disabled||count===0||count>remaining} onClick={()=>{try{const slides=makeSpeakingSlides(draft.frame,draft.rows,createId());onAdd(slides);setError('');setMessage(`${slides.length}개 말하기 연습을 PPT에 추가했습니다. 내용 검토 후 화면 발표를 눌러 주세요.`);}catch(e){setError(e instanceof Error?e.message:'문장 틀을 확인해 주세요.');}}}>말하기 연습을 PPT에 추가</button></details>;
+}

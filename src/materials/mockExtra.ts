@@ -1,3 +1,4 @@
+import {activitySlides} from './lessonSlides';
 import type {Blueprint} from '../model/schema';
 import type {Extra,ExtraOptions,SlideLayout} from '../model/extras';
 import {emojiFor,lookup} from './lexicon';
@@ -10,15 +11,15 @@ export function mockExtra(b:Blueprint,o:ExtraOptions):Extra{
  const meaning=(w:string)=>sentences[w]||lookup(w)?.ko||`뜻을 직접 입력해 주세요 (${w})`;
  if(o.kind==='flashcards')return {kind:'flashcards',title:'핵심 표현 카드',cards:source.slice(0,o.count).map((w,i)=>clean({id:'card-'+i,front:w,back:meaning(w),emoji:emojiFor(w)})),usedVocabulary:words};
  if(o.kind==='slides'){
- const flow=b.lessonFlow,act=(a:typeof flow[number],rank:number):Item=>({layout:'activity',title:'활동 안내',body:a.description,sub:`${a.minutes}분 · ${interaction[a.interaction]}`,notes:`${a.title}\n준비물: ${a.materials.join(', ')||'없음'}`,rank});
+
  const items:Item[]=[
   {layout:'title',title:b.meta.lessonTitle,body:'',sub:`초등 ${b.meta.grade}학년 영어`,notes:b.objective.ko,rank:0},
   {layout:'objective',title:'오늘의 학습 목표',body:b.objective.studentFriendly,notes:b.objective.ko,rank:1},
-  ...flow.filter(a=>a.phase==='Warm-up').map(a=>act(a,3)),
-  ...words.map((w,i):Item=>({layout:'word',title:w,body:'',sub:meaning(w),emoji:emojiFor(w),notes:`${i+1}/${words.length} 그림을 먼저 보여 주고 영어로 말하게 한 뒤, 뜻을 눌러 확인합니다.`,rank:1})),
-  ...b.targetExpressions.map((e):Item=>({layout:'expression',title:'오늘의 표현',body:e,sub:sentences[e]||'',emoji:emojiFor(e),notes:'교사가 먼저 읽고 학생이 따라 읽습니다. 억양과 강세를 함께 연습하세요.',rank:2})),
+
+  ...words.map((w,i):Item=>({layout:'word',title:w,body:'',sub:meaning(w),emoji:emojiFor(w),notes:`${i+1}/${words.length} 그림을 먼저 보여 주고 영어로 말하게 한 뒤, 뜻을 눌러 확인합니다.`,rank:2})),
+  ...b.targetExpressions.map((e):Item=>({layout:'expression',title:'오늘의 표현',body:e,sub:sentences[e]||'',emoji:emojiFor(e),notes:'교사가 먼저 읽고 학생이 따라 읽습니다. 억양과 강세를 함께 연습하세요.',rank:1})),
   {layout:'practice',title:'짝과 말해 보기',body:b.targetExpressions.slice(0,2).join('\n'),sub:'가위바위보로 순서를 정하고 역할을 바꿔요.',notes:'2~3분 동안 짝 대화를 연습하게 하고 돌아다니며 발음을 확인합니다.',rank:2},
-  ...flow.filter(a=>a.phase!=='Warm-up'&&a.phase!=='Wrap-up').map(a=>act(a,3)),
+  ...activitySlides(b).map(s=>({...s,layout:s.layout!,rank:0})),
   {layout:'wrapup',title:'오늘의 확인',body:b.objective.studentFriendly,sub:'오늘 배운 표현으로 짝에게 말해 보세요.',notes:b.assessment.focus,rank:0}];
  const checks=words.map((w,i):Item=>({layout:'check',title:'이 그림은 무엇일까요?',body:'',sub:w,emoji:emojiFor(w),notes:`정답: ${w} (${meaning(w)})`,rank:4} as Item));
  while(items.length<o.count&&checks.length){const at=items.findIndex(x=>x.layout==='wrapup');items.splice(at<0?items.length:at,0,checks.shift()!);}

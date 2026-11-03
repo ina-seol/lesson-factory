@@ -75,7 +75,7 @@ function draw(pptx:Pptx,item:SlideItem&{notes?:string},n:number,total:number,dec
 export async function buildPresentation(deck:SlideDeck|CardDeck){
  loadPalette();
  const {default:PptxGenJS}=await import('pptxgenjs');const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.author='Lesson Factory';pptx.subject='초등 영어 수업자료';pptx.title=deck.title;pptx.theme={headFontFace:FONT,bodyFontFace:FONT};
- if(deck.kind==='slides'){const pages=slidePages(deck);pages.forEach((item,i)=>draw(pptx,item,i+1,pages.length,deck.title,true));}
+ if(deck.kind==='slides'){const pages=slidePages(deck).flatMap(s=>(s.layout==='check'||s.layout==='drill')&&s.sub?[{...s,sub:s.layout==='drill'?'먼저 말한 뒤 다음 장에서 확인해요':s.sub},{...s,id:s.id+'-answer',layout:'expression' as const,title:'정답 확인',body:s.sub,sub:''}]:[s]);pages.forEach((item,i)=>draw(pptx,item,i+1,pages.length,deck.title,true));}
  else{const cards=cardPages(deck),total=cards.length*2;cards.forEach((c,i)=>{const notes='그림을 보고 영어로 말하게 한 뒤 다음 장에서 뜻을 확인합니다.';draw(pptx,{...c,notes},i*2+1,total,deck.title,false);draw(pptx,{...c,notes:'뜻을 함께 읽어 보세요.'},i*2+2,total,deck.title,true);});}
  return pptx;
 }

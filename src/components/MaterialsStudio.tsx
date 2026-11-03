@@ -7,7 +7,7 @@ import {AIRevision,Chips,ErrorState,Field,Icon,LoadingState,Modal} from './ui';
 import {Paper} from './Paper';
 import {QuestionEditor} from './QuestionEditor';
 type Tab='worksheet'|'game'|'assessment';
-const gameTypes=[{type:'quiz-show',name:'Quiz Show',desc:'4개의 선택지, 함께 찾는 정답',tag:'함께 생각하기',icon:'game'},{type:'speed-quiz',name:'Speed Quiz',desc:'60초 동안 표현을 빠르게 말해요',tag:'전자칠판 추천',icon:'clock'},{type:'matching',name:'Matching Game',desc:'터치하고 클릭하며 짝을 찾아요',tag:'짝 활동 추천',icon:'page'}] as const;
+const gameTypes=[{type:'quiz-show',name:'Quiz Show',desc:'4개의 선택지, 함께 찾는 정답',tag:'함께 생각하기',icon:'game'},{type:'speed-quiz',name:'Speed Quiz',desc:'스피드·철자·표현 조립까지 한 자료로',tag:'전자칠판 추천',icon:'clock'},{type:'matching',name:'Matching Game',desc:'짝 찾기·뜻 맞추기·알파벳 조립',tag:'짝 활동 추천',icon:'page'}] as const;
 export function MaterialsStudio({lesson,tab,provider,onChange,onPlay,onBlueprint}:{lesson:Lesson;tab:Tab;provider:AIProvider;onChange:(l:Lesson)=>void;onPlay:(g:Game)=>void;onBlueprint:()=>void}){
  const [wo,setWO]=useState<WorksheetOptions>({difficulty:'보통',count:5,types:['단어 연결','빈칸 채우기','문장 배열']}),[ao,setAO]=useState<AssessmentOptions>({kind:'Exit Ticket',areas:['말하기','읽기']}),[gt,setGT]=useState<Game['gameType']>('quiz-show'),[busy,setBusy]=useState(false),[error,setError]=useState(''),[selected,setSelected]=useState<Question|null>(null),[preview,setPreview]=useState(false),[replace,setReplace]=useState(false),[editGame,setEditGame]=useState(false),[answers,setAnswers]=useState(false);
  const material=lesson[tab];const data=material?.data;const stale=isStale(lesson,tab);const unknown=data?unknownVocabulary(lesson.blueprint,data):[];const confirmed=lesson.status==='confirmed';
