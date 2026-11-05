@@ -9,10 +9,10 @@ export const environments = ['전자칠판', '학생 1인 1 Chromebook', 'Tablet
 export const styles = ['활동 중심', '게임 중심', '말하기 중심', '차분한 연습 중심', '균형형'] as const;
 export const questionTypes = ['단어 연결', '빈칸 채우기', '문장 완성', '그림 보고 쓰기', '문장 배열', '짧은 읽기', '자유 쓰기'] as const;
 export const metaSchema = z.object({ grade: z.number().int().min(3).max(6), subject: z.literal('English'), lessonTitle: text, duration: z.number().int().min(10).max(120), studentCount: z.number().int().min(1).max(40) });
-export const intakeSchema = metaSchema.extend({ targetExpressions: strings, vocabulary: strings, focus: strings, environment: strings, style: z.enum(styles), notes: text });
+export const intakeSchema = metaSchema.extend({ targetExpressions: strings, vocabulary: z.array(text), focus: strings, environment: strings, style: z.enum(styles), notes: text });
 export const validIntakeSchema = intakeSchema.refine(x => x.lessonTitle.trim().length > 0 && x.targetExpressions.some(e => e.trim()), '단원명과 핵심 표현을 입력해 주세요.');
 export const activitySchema = z.object({ id: required, phase: z.enum(['Warm-up','Practice','Activity','Game','Wrap-up']), title: text, minutes: z.number().int().min(0).max(120), description: text, interaction: z.enum(['whole-class','pair','group','individual']), materials: strings });
-export const blueprintSchema = z.object({ meta: metaSchema, objective: z.object({ ko: text, studentFriendly: text }), targetExpressions: strings, vocabulary: strings, lessonFlow: z.array(activitySchema).max(20), assessment: z.object({ focus: text, method: text }) });
+export const blueprintSchema = z.object({ meta: metaSchema, objective: z.object({ ko: text, studentFriendly: text }), targetExpressions: strings, vocabulary: z.array(text), lessonFlow: z.array(activitySchema).max(20), assessment: z.object({ focus: text, method: text }) });
 export const generatedBlueprintSchema = blueprintSchema.superRefine((b,c) => {
  if (!b.objective.ko.trim() || !b.objective.studentFriendly.trim() || !b.targetExpressions.length || !b.lessonFlow.length || b.lessonFlow.some(a => !a.title.trim() || !a.description.trim() || a.minutes < 1)) c.addIssue({ code:'custom', message:'학습목표, 표현, 활동은 비어 있을 수 없습니다.' });
  if (b.lessonFlow.reduce((n,a)=>n+a.minutes,0)!==b.meta.duration) c.addIssue({code:'custom',message:'활동 시간의 합이 수업 시간과 다릅니다.'});

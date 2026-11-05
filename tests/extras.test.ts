@@ -31,3 +31,21 @@ test('connection persists across module reload, stays out of backups and can be 
  Object.defineProperty(globalThis,'window',{configurable:true,value:{location:{hostname:'ina-seol.github.io'}}});Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(k:string)=>data.get(k)||null,setItem:(k:string,v:string)=>data.set(k,v),removeItem:(k:string)=>data.delete(k)}});
  try{setConnection('https://example.workers.dev','test-only-token');const modulePath='../src/ai/connection.ts?reload-test',reloaded=await import(modulePath);assert.equal(reloaded.getConnection().accessToken,'test-only-token');assert.equal(getAIRequestTarget().url,'https://example.workers.dev/api/ai');assert.ok(!JSON.stringify(emptyWorkspace()).includes('test-only-token'));assert.throws(()=>setConnection('http://example.com','token'));assert.equal(getConnection().accessToken,'test-only-token');clearConnection();assert.equal(getConnection().accessToken,'');assert.throws(()=>getAIRequestTarget());}finally{if(oldWindow)Object.defineProperty(globalThis,'window',oldWindow);else Reflect.deleteProperty(globalThis,'window');if(oldStorage)Object.defineProperty(globalThis,'localStorage',oldStorage);else Reflect.deleteProperty(globalThis,'localStorage');}
 });
+
+test('flashcards support the entire vocabulary, batch generation and backup beyond 60 cards',async()=>{
+ const {createProvider}=await import('../src/ai/provider');const {extraOptionsSchema}=await import('../src/model/extras');
+ const vocabulary=Array.from({length:67},(_,i)=>`word${i}`),input={...sampleIntake,vocabulary},b=mockLesson(input);
+ const o={kind:'flashcards' as const,source:'vocabulary' as const,count:67,format:'choice' as const};assert.ok(extraOptionsSchema.safeParse(o).success);
+ const cards=await createProvider('mock').generateExtra(b,o);assert.equal(cards.kind,'flashcards');if(cards.kind!=='flashcards')return;
+ assert.equal(cards.cards.length,67);assert.equal(new Set(cards.cards.map(c=>c.id)).size,67);assert.deepEqual(cards.cards.map(c=>c.front),vocabulary);
+ const w=emptyWorkspace();w.lessons=[{id:'large',createdAt:'now',updatedAt:'now',status:'confirmed',input,blueprint:b,blueprintRevision:1,flashcards:{data:cards,reviewed:false,createdAt:'now',blueprintRevision:1}}];assert.equal(parseBackup(JSON.stringify(w)).lessons[0].flashcards?.data.kind,'flashcards');
+});
+
+test('PPT and game render usable controls without vocabulary or review approval',async()=>{
+ const React=await import('react');const {renderToStaticMarkup}=await import('react-dom/server');const {ExtraStudio}=await import('../src/materials/ExtraStudio');const {MaterialsStudio}=await import('../src/components/MaterialsStudio');const {createProvider}=await import('../src/ai/provider');const {mockGame}=await import('../src/ai/mock');
+ const l:Lesson={id:'gates',createdAt:'now',updatedAt:'now',status:'draft',input:sampleIntake,blueprint,blueprintRevision:2};
+ const slides:Extra={kind:'slides',title:'Lecture expressions',slides:[{id:'a',title:'Lecture',body:'Expression',notes:''}],usedVocabulary:['lecture','expression']};
+ l.slides={data:slides,reviewed:false,createdAt:'now',blueprintRevision:1};l.game={data:{...mockGame(blueprint,'speed-quiz'),usedVocabulary:['lecture']},reviewed:false,createdAt:'now',blueprintRevision:1};
+ const props={lesson:l,provider:createProvider('mock'),onChange:()=>{},onBlueprint:()=>{}};
+ for(const html of [renderToStaticMarkup(React.createElement(ExtraStudio,{...props,kind:'slides'})),renderToStaticMarkup(React.createElement(MaterialsStudio,{...props,tab:'game',onPlay:()=>{}}))]){assert.doesNotMatch(html,/검토 완료로 표시/);assert.doesNotMatch(html,/<button[^>]*disabled[^>]*>(?:화면 발표|PPTX 다운로드|[^<]*게임 실행)/);assert.match(html,/바로/);}
+});
