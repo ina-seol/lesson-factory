@@ -1,0 +1,8 @@
+import {useState} from 'react';
+import {Modal} from '../components/ui';
+import {encodeStudent,type StudentPayload} from './payload';
+export function ShareButton({payload,disabled=false}:{payload:StudentPayload;disabled?:boolean}){
+ const [open,setOpen]=useState(false),[busy,setBusy]=useState(false),[link,setLink]=useState(''),[qr,setQr]=useState(''),[message,setMessage]=useState('');
+ async function share(){setOpen(true);setBusy(true);setMessage('');setLink('');setQr('');try{const url=window.location.href.split('#')[0]+'#/student/'+await encodeStudent(payload);setLink(url);if(url.length<=2200){try{const q=await import('qrcode');setQr(await q.toDataURL(url,{width:360,margin:4,errorCorrectionLevel:'L'}));}catch{setMessage('QR 생성에 실패했어요. 링크로 공유할 수 있습니다.');}}else setMessage('자료가 많아 QR 대신 링크로 공유해 주세요.');}catch(e){setMessage(e instanceof Error?e.message:'링크를 만들지 못했습니다.');}finally{setBusy(false);}}
+ return <><button className="btn" disabled={disabled||busy} onClick={share}>학생용 링크 · QR</button>{open&&<Modal title="학생에게 연습 공유" onClose={()=>setOpen(false)}><p>현재 자료의 복사본입니다. 수정 후에는 새 링크를 만들어 주세요. 교사 설정과 API 연결 정보는 공유되지 않습니다.</p>{busy&&<p role="status">링크 만드는 중…</p>}{link&&<><label>학생용 링크<textarea readOnly value={link} onFocus={e=>e.target.select()}/></label><div className="extra-actions"><button className="btn" onClick={async()=>{try{await navigator.clipboard.writeText(link);setMessage('복사했어요.');}catch{setMessage('위 링크를 선택하여 직접 복사해 주세요.');}}}>링크 복사</button><a className="btn primary" href={link} target="_blank" rel="noreferrer">학생 화면 확인</a></div>{qr&&<img className="student-qr" src={qr} alt="학생 연습 링크 QR 코드"/>}<p>링크를 가진 사람은 자료와 정답을 볼 수 있습니다. 이전 링크를 회수할 수 없으며 학생별 결과는 수집하지 않습니다.</p></>}{message&&<p role="status">{message}</p>}</Modal>}</>;
+}

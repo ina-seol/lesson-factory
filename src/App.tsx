@@ -1,4 +1,5 @@
 'use client';
+import {StudentView} from './sharing/StudentView';
 import {ThemePicker} from './materials/ThemePicker';
 import type {ExtraKind} from './model/extras';
 import {ExtraStudio} from './materials/ExtraStudio';
@@ -18,7 +19,8 @@ import {GamePlayer} from './games/GamePlayer';
 import {Chips,ErrorState,Field,Icon,LoadingState,Modal} from './components/ui';
 type StudioTab='blueprint'|'worksheet'|'game'|'assessment'|'flashcards'|'slides'|'wordquiz';
 function makeLesson(input:Intake,blueprint=mockLesson(input)):Lesson{const now=new Date().toISOString();return {id:createId(),createdAt:now,updatedAt:now,status:'draft',input,blueprint,blueprintRevision:1};}
-export default function App(){
+export default function App(){const [hash,setHash]=useState<string|null>(null);useEffect(()=>{const change=()=>setHash(window.location.hash);change();window.addEventListener('hashchange',change);return()=>window.removeEventListener('hashchange',change);},[]);if(hash===null)return <p>불러오는 중…</p>;return hash.startsWith('#/student/')?<StudentView token={hash.slice(10)}/>:<TeacherApp/>;}
+function TeacherApp(){
  const {data,ready,update,saveState,warning,conflict,reload,retry}=useWorkspace();
  const [route,setRoute]=useState('home'),[tab,setTab]=useState<StudioTab>('blueprint'),[busy,setBusy]=useState(false),[error,setError]=useState(''),[backup,setBackup]=useState(false),[backupText,setBackupText]=useState(''),[importError,setImportError]=useState(''),[toast,setToast]=useState(''),[play,setPlay]=useState<Game|null>(null),[offline,setOffline]=useState(false),[query,setQuery]=useState(''),[filter,setFilter]=useState('전체');
  const provider=useMemo(()=>createProvider(data.preferences.mode),[data.preferences.mode]);

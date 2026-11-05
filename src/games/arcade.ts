@@ -11,3 +11,10 @@ export function eligible(items:ArcadeItem[],mode:ArcadeMode){return items.filter
 export function tilesFor(answer:string,mode:ArcadeMode){return shuffle((mode==='sentence'?answer.trim().split(/\s+/):Array.from(answer)).map((text,id)=>({text,id})));}
 export function meaningChoices(item:ArcadeItem,items:ArcadeItem[]){return shuffle([item.meaning,...shuffle([...new Set(items.map(x=>x.meaning).filter(x=>x!==item.meaning))]).slice(0,3)]);}
 export function award(correct:boolean,streak:number,hinted:boolean){const next=correct?streak+1:0;return {streak:next,points:correct?(hinted?50:100+Math.min(next-1,4)*25):0};}
+
+export type ArcadeSettings={difficulty:'easy'|'normal'|'challenge';teams:number;rounds:number};
+export const defaultArcadeSettings:ArcadeSettings={difficulty:'normal',teams:1,rounds:5};
+export function roundItems(items:ArcadeItem[],settings:ArcadeSettings):ArcadeItem[]{
+ if(!items.length)return [];const count=settings.teams===1?Math.min(items.length,settings.rounds):settings.teams*settings.rounds;
+ const result:ArcadeItem[]=[];while(result.length<count)result.push(...shuffle(items));return result.slice(0,count);
+}
