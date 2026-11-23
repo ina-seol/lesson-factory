@@ -6,7 +6,7 @@ const progressive:Record<string,string>={draw:'drawing',read:'reading',write:'wr
 export type SpeakingRow={word:string;cue:string;replacement:string;enabled:boolean};
 export function speakingDefaults(b:Blueprint){
  const continuous=b.targetExpressions.some(e=>/^I['’]m\s+\w+ing\b/i.test(e));
- return {frame:continuous?`I'm ${slot}.`:(b.targetExpressions[0]||''),rows:b.vocabulary.slice(0,20).map(word=>({word,cue:lookup(word)?.ko||word,replacement:continuous?(progressive[word.toLowerCase()]||word):word,enabled:true}))};
+ return {frame:continuous?`I'm ${slot}.`:(b.targetExpressions[0]||''),rows:b.vocabulary.map(word=>({word,cue:lookup(word)?.ko||word,replacement:continuous?(progressive[word.toLowerCase()]||word):word,enabled:true}))};
 }
 export function makeSpeakingSlides(frame:string,rows:SpeakingRow[],idPrefix:string):Extract<Extra,{kind:'slides'}>['slides']{
  if(frame.split(slot).length!==2)throw new Error('문장 틀에 {{단어}}를 정확히 한 번 넣어 주세요.');
