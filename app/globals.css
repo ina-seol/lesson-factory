@@ -165,3 +165,7 @@ img.picture{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
  .class-game .team-board .active{border-color:var(--green)}.memory-card{background:#242d23;border-color:var(--line);color:var(--ink)}
  .classroom-screen button:focus-visible{outline:3px solid #abff84;outline-offset:4px}
 }
+@media screen {
+ .dashboard-empty,.empty-material,.loading-state,.material-review,.extra-review,.revision-form,.ai-revision,.review-checks,.game-picker>button{background:var(--surface);color:var(--text);border-color:var(--line);box-shadow:none}
+ .dashboard-empty h3,.empty-material h3,.dashboard-empty p,.empty-material p{color:var(--text)}
+}
