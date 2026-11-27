@@ -109,3 +109,59 @@ img.picture{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
 .classroom-setup{max-width:1100px;margin:auto}.classroom-guide{background:var(--surface,#fff);border:1px solid #d8e2dc;border-radius:12px;padding:24px;margin:24px 0}.class-word-row{display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:16px;align-items:center;padding:16px;border-bottom:1px solid #d8e2dc}.class-word-row input{width:100%}.classroom-screen{position:fixed;inset:0;z-index:100;background:#f6f8f4;padding:24px;overflow:auto}.classroom-screen>header,.classroom-screen>nav,.class-controls,.class-timer{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:16px}.classroom-screen>header{justify-content:space-between}.classroom-screen>.slide-view{max-width:1040px;margin:16px auto}.classroom-screen details{max-width:1040px;margin:16px auto}.teacher-script{white-space:pre-wrap}.class-timer strong{font-size:30px;font-variant-numeric:tabular-nums}.class-game{max-width:1100px;margin:auto;text-align:center}.class-challenge{padding:32px;border:1px solid #d8e2dc;border-radius:16px;background:white;margin-top:24px}.class-challenge h3{font-size:30px}.memory-card{border:1px solid #b7cbbc;border-radius:12px;padding:32px;font-size:36px;background:#edf5ed}.reveal-word{font-size:36px;overflow-wrap:anywhere}.class-controls .btn{min-height:56px;min-width:120px}.classroom-screen .speaking-session{position:static}.classroom-screen button:focus-visible{outline:3px solid #255f4e;outline-offset:3px}@media(max-width:800px){.class-word-row{grid-template-columns:1fr 1fr}.classroom-screen{padding:12px}.memory-card{padding:16px;font-size:24px}.classroom-screen>header span{max-width:45%;font-size:14px}}
 
 .speaking-question{font-size:30px;line-height:1.3}.classroom-screen .speaking-card{padding:24px}.classroom-screen .speaking-sentence{min-height:96px}
+
+/* Teacher workspace: warm chalkboard, inspired by the supplied GSAP reference.
+   Screen-only tokens keep the A4 print output independent. */
+@media screen {
+ :root{--bg:#0e100f;--surface:#191919;--ink:#fffce1;--text:#e5e3d1;--muted:#b2b3a4;--line:#42433d;--green:#abff84;--green-hover:#dfffd1;--mint:#242d23;--sage:#30382c;--orange:#ffb061;--danger:#ffb2a5;--warning:#ffd496;--r:8px;--r-lg:8px}
+ body{font-family:'DM Sans','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:16px}
+ .sidebar,.topbar,.classroom-screen,.speaking-session{background:var(--bg);color:var(--text)}
+ .sidebar{border-color:var(--line)}.brand,.brand-dot{color:var(--green)}
+ .topbar{background:var(--bg)}.main-content{max-width:1400px}
+ .sidebar nav button,.settings-nav,.breadcrumb b,.save-state,.dashboard-heading p,.workspace-label,.local-note p,.local-note strong,.version,.nav-count{color:var(--muted)}
+ .sidebar nav button.active,.settings-nav.active,.sidebar nav button:hover,.settings-nav:hover{background:#191f18;color:var(--green)}
+ .btn,.btn.primary{background:transparent;border:1px solid #b7b6a3;color:var(--ink);border-radius:100px;padding:10px 20px;box-shadow:none}
+ .btn.primary{border-color:var(--green)}.btn:hover:not(:disabled),.btn.primary:hover:not(:disabled){background:#242921;border-color:var(--green)}
+ .text-btn,.text-btn:hover{color:var(--green)}.icon-btn:hover{background:#30342c}
+ input:not([type=checkbox]):not([type=radio]),select,textarea{background:#191919;color:var(--ink);border-color:var(--line);color-scheme:dark}
+ input::placeholder,textarea::placeholder{color:#a6a797}
+ .local-note,.mode-badge,.avatar,.welcome-panel,.lesson-card,.form-section,.intake-aside,.editor-section,.activity,.options-panel,.review-panel,.script-panel,.extra-edit-item,.modal,.classroom-guide,.speaking-card,.notice,.sample-tip{background:var(--surface);border-color:var(--line);box-shadow:none;color:var(--text)}
+ .welcome-copy h2{color:var(--ink);font-size:clamp(32px,4vw,56px);line-height:1.15;letter-spacing:-.02em}.welcome-copy p{color:var(--muted)}
+ .welcome-panel{border-radius:8px}.dashboard-heading h1{font-size:36px}.desk-illustration{opacity:.85}
+ .lesson-card h3,.lesson-card p,.lesson-cover,.card-footer,.lesson-heading,.lesson-title-input,.activity-title,.minutes,.time-total{color:var(--ink)}
+ .lesson-cover,.time-total,.tag,.chip,.badge,.mode-options button,.studio-tabs button{background:#20231e;color:var(--text);border-color:var(--line)}
+ .badge.green,.chip.selected,.tag,.studio-tabs button.active{color:var(--green);background:#20291f}.studio-tabs{border-color:var(--line)}
+ .studio-tabs button:nth-child(2){color:#fec5fb}.studio-tabs button:nth-child(3){color:#ffb061}.studio-tabs button:nth-child(4){color:#9d95ff}
+ .eyebrow{color:var(--green);font-size:12px;letter-spacing:1.8px}.error{background:#321e1a;color:#ffb2a5;border-color:#a45c4b}.warning{background:#302719;color:#ffd496}
+ .classroom-setup{display:grid;gap:24px;padding-top:16px}.classroom-setup h2{font-size:clamp(32px,4vw,56px);line-height:1.2;letter-spacing:-.025em}
+ .classroom-setup>p{max-width:760px;color:var(--muted)}.classroom-guide{padding:24px;border:1px solid var(--line);border-radius:8px}
+ .drill-patterns{display:flex;flex-wrap:wrap;gap:12px;padding:24px 0;border-block:1px solid var(--line)}.drill-patterns .eyebrow,.drill-patterns p{width:100%}
+ .class-word-row{padding:20px 0;border-bottom:1px solid var(--line);gap:24px}.class-word-row>strong{font-size:24px;color:#fec5fb}.class-word-row label{font-size:14px;color:var(--muted)}
+ .drill-answer{font-size:20px;line-height:1.6}.drill-answer mark,.speaking-sentence mark{color:#abff84;background:transparent;border-bottom:2px solid #abff84;padding:0 4px}
+ .drill-stages{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}.drill-stages .btn[aria-pressed=true]{color:#abff84;border-color:#abff84}.drill-stages .btn:nth-child(2){color:#fec5fb}.drill-stages .btn:nth-child(3){color:#00bae2}
+ .speaking-session{padding:24px;overflow:auto}.speaking-session progress{width:100%;height:4px;accent-color:#abff84}.drill-instruction{margin:16px 0;color:var(--muted)}
+ .speaking-card{position:relative;border:1px solid var(--line);border-radius:8px;max-width:1100px;margin:24px auto;padding:32px;text-align:center;box-shadow:none}
+ .speaking-card h2{font-size:24px;color:#fec5fb}.speaking-card .game-picture{font-size:56px}.drill-count{position:absolute;right:24px;top:20px;font-size:16px;color:var(--muted);font-variant-numeric:tabular-nums}
+ .speaking-question{font-size:clamp(24px,3vw,36px);margin:16px 0;color:var(--ink)}.speaking-question>span{font-size:16px;color:#00bae2}
+ .speaking-sentence{font-size:clamp(28px,4.2vw,60px);font-weight:600;line-height:1.25;min-height:80px;overflow-wrap:anywhere;color:var(--ink)}
+ .drill-frame{font-size:clamp(22px,3vw,36px);margin:16px 0;color:var(--ink)}.speaking-card .extra-actions{justify-content:center;margin-top:32px}
+ .classroom-screen .speaking-session{position:static}.classroom-screen .speaking-card{padding:24px}
+ /* Printed materials and slide previews keep their own light surfaces and ink. */
+ .paper,.handwriting-paper,.extra-paper{--ink:#243b32;--text:#34463e;--muted:#617168;--line:#d4d8d0;color:#243b32;background:#fff}
+ .paper input,.paper textarea,.handwriting-paper input,.handwriting-paper textarea{color:#243b32!important;background:#fff!important;color-scheme:light}
+ .slide-view{--ink:#243b32;--text:#34463e}.player-notes{background:#191919;color:var(--text)}
+ @media(max-width:800px){.class-word-row{grid-template-columns:1fr 1fr}.class-word-row .drill-answer{grid-column:1/-1}.speaking-session{padding:12px}.drill-stages .btn{padding:8px 12px;font-size:14px}}
+}
+
+@media screen {
+ .theme-picker button{color:#243b32}.form-footer,.editor-two,.review-stat,.sheet-options,.extra-options,.material-toolbar{background:var(--surface);color:var(--text);border-color:var(--line)}
+ .classroom-screen{padding:20px}.classroom-screen .speaking-session header{margin-bottom:12px}.classroom-screen .drill-stages{margin:12px 0}.classroom-screen .speaking-card{margin:16px auto}.classroom-screen .drill-instruction{margin:12px 0}
+ @media(max-height:800px){.classroom-screen .speaking-session{padding:12px}.classroom-screen .speaking-card .game-picture{font-size:36px}.classroom-screen .speaking-card{padding:16px}.classroom-screen .speaking-card .extra-actions{margin-top:16px}.classroom-screen .speaking-sentence{min-height:64px;font-size:clamp(28px,4vw,52px)}}
+}
+@media screen {
+ .game-player,.extra-player{--ink:#243b32;--text:#34463e;--muted:#617168;--green:#2e5e4e;--green-hover:#234b3e;--line:#b7c8bc}
+ .game-player .btn:hover:not(:disabled),.extra-player .btn:hover:not(:disabled){background:#e5eee1}
+ .class-challenge,.class-game .team-board .active{background:#191919;border-color:var(--line);color:var(--text)}
+ .class-game .team-board .active{border-color:var(--green)}.memory-card{background:#242d23;border-color:var(--line);color:var(--ink)}
+ .classroom-screen button:focus-visible{outline:3px solid #abff84;outline-offset:4px}
+}

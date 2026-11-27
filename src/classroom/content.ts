@@ -7,7 +7,8 @@ import type {SlideDeck} from '../materials/presentation';
 export function classRows(lesson:Lesson){const defaults=speakingDefaults(lesson.blueprint);return writingEntries(lesson,'words').map(e=>({word:e.english,cue:e.meaning,replacement:lesson.classroom?.replacements[e.english]??defaults.rows.find(r=>r.word===e.english)?.replacement??e.english,enabled:true}));}
 export function classDeck(lesson:Lesson):SlideDeck{
  const b=lesson.blueprint,rows=classRows(lesson),frame=lesson.classroom?.frame??speakingDefaults(b).frame;
- const drills=makeSpeakingSlides(frame,rows,'class-drill');
+ const question=lesson.classroom?.question??speakingDefaults(b).question;
+ const drills=makeSpeakingSlides(frame,rows,'class-drill').map(s=>({...s,notes:`묻는 말: ${question}\n${s.notes}`}));
  return {kind:'slides',title:b.meta.lessonTitle,usedVocabulary:b.vocabulary,slides:[
  {id:'class-goal',layout:'objective',title:'오늘의 목표',body:b.objective.studentFriendly,sub:b.targetExpressions.join(' / ').slice(0,200),notes:'오늘의 목표를 읽고 수업이 끝나면 무엇을 할 수 있는지 함께 확인합니다.'},
  ...rows.map((r,i)=>({id:`class-word-${i}`,layout:'word' as const,title:r.word,body:'',sub:r.cue,emoji:emojiFor(r.word),notes:'뜻을 먼저 추측하고 공개합니다. 전체가 한 번 말하고 짝에게 한 번 더 말합니다.'})),

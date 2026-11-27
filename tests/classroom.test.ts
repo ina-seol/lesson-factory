@@ -31,7 +31,7 @@ test('arcade uses reviewed content and distinguishes word and expression modes',
 test('speaking drills build hidden prompts with accurate editable substitutions',async()=>{
  const {speakingDefaults,makeSpeakingSlides}=await import('../src/materials/speaking');
  const d=speakingDefaults(blueprint),slides=makeSpeakingSlides(d.frame,d.rows,'test');
- assert.equal(slides.length,6);assert.equal(slides[0].body,"I'm ________.");assert.equal(slides[0].sub,"I'm drawing.");assert.equal(slides[2].sub,"I'm writing.");assert.equal(slides[4].sub,"I'm dancing.");
+ assert.equal(slides.length,6);assert.equal(slides[0].body,"I'm ________.");assert.equal(slides[0].sub,"I'm drawing a picture.");assert.equal(slides[2].sub,"I'm writing.");assert.equal(slides[4].sub,"I'm dancing.");
  assert.throws(()=>makeSpeakingSlides('No slot',d.rows,'x'));assert.throws(()=>makeSpeakingSlides('{{단어}} {{단어}}',d.rows,'x'));
  const custom=makeSpeakingSlides('I like {{단어}}.',[{word:'apple',cue:'사과',replacement:'apples',enabled:true}],'x');assert.equal(custom[0].sub,'I like apples.');
  const foreign={kind:'slides' as const,title:'test',slides:[{...slides[0],sub:'I am skiing.'}],usedVocabulary:[]};assert.ok(unknownVocabulary(blueprint,foreign).includes('skiing'));
